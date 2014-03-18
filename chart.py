@@ -17,7 +17,7 @@ class Chart:
         plt.axis("equal")
         plt.pie(
             x=[v for k, v in self.data],
-            labels=[k for k,v in self.data],
+            labels=[k for k, v in self.data],
             autopct="%1.1f%%"
         )
         plt.show()
