@@ -1,6 +1,6 @@
 __author__ = 'issue'
 import matplotlib.pyplot as plt
-
+#todo draw on qt gui
 
 class Chart:
 
