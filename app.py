@@ -23,20 +23,29 @@ def gettotalsize(path):
 
 def getfilesize(file):
     filepath = os.path.join(args.directory, file)
-    filesize = os.path.getsize(filepath)
+    #print(filepath)
+    try:
+        filesize = os.path.getsize(filepath)
+    except OSError as e:
+        print(e)
+
+    #print(filesize)
     return filepath, filesize
 
 
-def createnameandsize():
+def createnameandsize(path):
     """
     returns a list with tuples of fully qualified path and filesize in bytes
     """
     s = []
     for root, dirs, filenames in os.walk(args.directory):
         for f in filenames:
+            filepath = os.path.join(root, f)
+            #print(os.listdir(args.directory))
             #print(getfilesize(f))
             s.append(getfilesize(f))
     return s
+
 
 
 def to_percent(data):
@@ -48,10 +57,25 @@ def to_percent(data):
     return data
 
 
+def group_small_files(data):
+    """
+    if a file is smaller than 1 percent of the current total, we add it to a group of misc files and return the new
+    data with the files grouped up
+    """
+    misc = [(k, v) for k, v in data if v < 1]
+    newdata = [(k, v) for k, v in data if (k, v) not in misc]
+    newdata.append(("misc", float(sum(v for _, v in misc))))
+    return newdata
+
+
+
+
 
 def create_pie(data):
+    """
+    expects data in key value format, value should be percentage
+    """
 
-    #print(percentages)
     plt.axis("equal")
     plt.pie(
         x=[v for k, v in data],
@@ -61,8 +85,9 @@ def create_pie(data):
     plt.show()
 
 #testing
-stuff = createnameandsize()
-create_pie(to_percent(stuff))
+#stuff = createnameandsize()
+stuff = createnameandsize(args.directory)
+create_pie(group_small_files(to_percent(stuff)))
 #print(to_percent(stuff))
 #print(createnameandsize())
 #print(gettotalsize(args.directory))
