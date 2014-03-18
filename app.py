@@ -3,12 +3,14 @@ import os
 import matplotlib.pyplot as plt
 import argparse
 
+#todo maybe object oriented try, class Directory for example etc
+
 parser = argparse.ArgumentParser(description="Display filesystem usage as pie chart")
 parser.add_argument('directory', help="directory to create chart for")
 args = parser.parse_args()
 
 
-def gettotalsize(path):
+def get_total_size(path):
     """
     walk all files, stat their size and add the sizes
     returns size of a folder in bytes
@@ -21,15 +23,13 @@ def gettotalsize(path):
     return total_size
 
 
-def getfilesize(file):
-    filepath = os.path.join(args.directory, file)
-    #print(filepath)
+def get_file_size(path, file):
+    filepath = os.path.join(path, file)
     try:
         filesize = os.path.getsize(filepath)
     except OSError as e:
         print(e)
 
-    #print(filesize)
     return filepath, filesize
 
 
@@ -38,13 +38,12 @@ def createnameandsize(path):
     returns a list with tuples of fully qualified path and filesize in bytes
     """
     s = []
-    for root, dirs, filenames in os.walk(args.directory):
-        for f in filenames:
-            filepath = os.path.join(root, f)
-            #print(os.listdir(args.directory))
-            #print(getfilesize(f))
-            s.append(getfilesize(f))
+
+    for item in os.listdir(path):
+        if os.path.isfile(os.path.join(path, item)):
+            s.append(get_file_size(path, item))
     return s
+
 
 
 
@@ -68,9 +67,6 @@ def group_small_files(data):
     return newdata
 
 
-
-
-
 def create_pie(data):
     """
     expects data in key value format, value should be percentage
@@ -79,7 +75,7 @@ def create_pie(data):
     plt.axis("equal")
     plt.pie(
         x=[v for k, v in data],
-        labels=[k for k,v in data],
+        labels=[k[len(args.directory):] for k,v in data],
         autopct="%1.1f%%"
     )
     plt.show()
@@ -91,4 +87,3 @@ create_pie(group_small_files(to_percent(stuff)))
 #print(to_percent(stuff))
 #print(createnameandsize())
 #print(gettotalsize(args.directory))
-#print(str(getfilesize("out.pdf")[0]) + " is " + str(getfilesize("out.pdf")[1]))
