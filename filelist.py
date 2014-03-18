@@ -1,14 +1,31 @@
 import os
 from utils import to_percent
+
 __author__ = 'issue'
 #todo think about including folder sizes
+
+
+def get_foldersize(path):
+
+    total_size = 0
+    for root, dirs, files in os.walk(path):
+
+        for f in files:
+            #print(f)
+            filepath = os.path.join(root, f)
+            total_size += os.path.getsize(filepath)
+    return total_size
+
 
 class FileList:
     """
     This class handles a given directory and provides information needed about it to create a chart
     """
+    ignored_files = [".fscache", ".directory"]
+
     def __init__(self, directory):
         self.directory = directory
+        self.filecount = 0
         self.data = self.get_files_and_size()
         self.filesize_percentage = to_percent(self.data)
         self.reprdata = self.group_small_files()
@@ -23,7 +40,13 @@ class FileList:
         s = []
         for item in os.listdir(self.directory):
             if os.path.isfile(os.path.join(self.directory, item)):
-                s.append(self.get_filesize(item))
+                if any(os.path.basename(os.path.join(self.directory, item)) in ignored for ignored in
+                       self.ignored_files):
+                    pass
+                else:
+                    s.append(self.get_filesize(item))
+            else:  # we hit a dir
+                s.append(tuple([item, get_foldersize(os.path.join(self.directory, item))]))
         return s
 
     def get_filesize(self, file):
@@ -36,7 +59,7 @@ class FileList:
         except OSError as e:
             print(e)
 
-        return filepath, filesize
+        return file, filesize
 
     def group_small_files(self):
         """
@@ -50,7 +73,13 @@ class FileList:
         #print(newdata)
         return newdata
 
+    def prepare_data(self):
+        pass
+
+
+
 #fl = FileList("/home/issue/tmp")
-#print(fl.get_filesize("out.pdf"))
-#print(fl.data)
-#print(fl.group_small_files())
+
+#print(get_foldersize("/home/issue/tmp"))
+        #print(fl.data)
+        #print(fl.group_small_files())
