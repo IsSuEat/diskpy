@@ -4,11 +4,19 @@ from utils import to_percent
 
 __author__ = 'issue'
 # todo think about threading calculating file size
-
+# todo implement search depth, or think about a way to store the lare  values
+# todo fix get foldersize
 
 def get_foldersize(path):
     total_size = 0
+    res = []
     for root, dirs, files in os.walk(path):
+        depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
+        if depth  == 2:
+            res += [os.path.join(root, d, f) for d,f in dirs,files]
+
+            dirs[:] = []
+        print(res)
         for f in files:
             filepath = os.path.join(root, f)
             try:
@@ -16,7 +24,6 @@ def get_foldersize(path):
             except OSError as e:
                 logging.warn("File not found " + e.filename)
     return total_size
-
 
 class FileList:
     """

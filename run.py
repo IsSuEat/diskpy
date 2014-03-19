@@ -5,7 +5,6 @@ __author__ = 'issue'
 import argparse
 from chart import Chart
 from filelist import FileList
-from utils import to_percent
 
 
 parser = argparse.ArgumentParser(description="Display filesystem usage as pie chart")
