@@ -1,19 +1,20 @@
 import os
+import logging
 from utils import to_percent
 
 __author__ = 'issue'
-#todo think about including folder sizes
+# todo think about threading calculating file size
 
 
 def get_foldersize(path):
-
     total_size = 0
     for root, dirs, files in os.walk(path):
-
         for f in files:
-            #print(f)
             filepath = os.path.join(root, f)
-            total_size += os.path.getsize(filepath)
+            try:
+                total_size += os.path.getsize(filepath)
+            except OSError as e:
+                logging.warn("File not found " + e.filename)
     return total_size
 
 
@@ -35,9 +36,10 @@ class FileList:
 
     def get_files_and_size(self):
         """
-        generates a list of files in a directory with file sizes passed as tuples
+        generates a list of files and folders in a directory with file sizes passed as tuples
         """
         s = []
+
         for item in os.listdir(self.directory):
             if os.path.isfile(os.path.join(self.directory, item)):
                 if any(os.path.basename(os.path.join(self.directory, item)) in ignored for ignored in
@@ -46,6 +48,7 @@ class FileList:
                 else:
                     s.append(self.get_filesize(item))
             else:  # we hit a dir
+               # pass
                 s.append(tuple([item, get_foldersize(os.path.join(self.directory, item))]))
         return s
 
