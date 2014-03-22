@@ -5,18 +5,18 @@ from utils import to_percent
 __author__ = 'issue'
 # todo think about threading calculating file size
 # todo implement search depth, or think about a way to store the lare  values
-# todo fix get foldersize
+
 
 def get_foldersize(path):
     total_size = 0
     res = []
     for root, dirs, files in os.walk(path):
         depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
-        if depth  == 2:
-            res += [os.path.join(root, d, f) for d,f in dirs,files]
+        # if depth  == 2:
+        #    res += [os.path.join(root, d, f) for d,f in dirs,files]
 
-            dirs[:] = []
-        print(res)
+        #   dirs[:] = []
+        # print(res)
         for f in files:
             filepath = os.path.join(root, f)
             try:
@@ -25,21 +25,24 @@ def get_foldersize(path):
                 logging.warn("File not found " + e.filename)
     return total_size
 
+
 class FileList:
     """
     This class handles a given directory and provides information needed about it to create a chart
     """
     ignored_files = [".fscache", ".directory"]
+    ignored_folders = ["/dev", "/proc", "/run", "/media", "/sys"]
 
     def __init__(self, directory):
         self.directory = directory
         self.filecount = 0
         self.data = self.get_files_and_size()
+        logging.info("Done scanning files")
+
         self.filesize_percentage = to_percent(self.data)
         self.reprdata = self.group_small_files()
 
         print("fl init")
-        #print(self.filedata)
 
     def get_files_and_size(self):
         """
@@ -55,8 +58,14 @@ class FileList:
                 else:
                     s.append(self.get_filesize(item))
             else:  # we hit a dir
-               # pass
-                s.append(tuple([item, get_foldersize(os.path.join(self.directory, item))]))
+                if any(item in ignored for ignored in self.ignored_folders):
+
+                    pass
+                else:
+                    s.append(tuple([item, get_foldersize(os.path.join(self.directory, item))]))
+
+
+
         return s
 
     def get_filesize(self, file):
