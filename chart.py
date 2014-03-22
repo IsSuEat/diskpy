@@ -2,12 +2,12 @@ __author__ = 'issue'
 import matplotlib.pyplot as plt
 #todo draw on qt gui
 
+
 class Chart:
 
     def __init__(self, data):
         self.data = data
         print("chart init")
-
 
     def create_pie(self):
         """

@@ -18,5 +18,9 @@ else:
 
     fl = FileList(args.directory)
     piechart = Chart(fl.reprdata)
+    with open("data.txt", "w") as f:
+
+        f.write(str(fl.reprdata))
+
     piechart.create_pie()
 
