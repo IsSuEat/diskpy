@@ -22,11 +22,11 @@ def get_foldersize(path):
             try:
                 total_size += os.path.getsize(filepath)
             except OSError as e:
-                logging.warn("File not found " + e.filename)
+                logging.warn("File not found (maybe broken link): " + e.filename)
     return total_size
 
 
-class FileList:
+class FileList(object):
     """
     This class handles a given directory and provides information needed about it to create a chart
     """
@@ -86,10 +86,8 @@ class FileList:
         data with the files grouped up
         """
         misc = [(k, v) for k, v in self.filesize_percentage if v < 1]
-        #print(misc)
         newdata = [(k, v) for k, v in self.filesize_percentage if (k, v) not in misc]
         newdata.append(("misc", float(sum(v for _, v in misc))))
-        #print(newdata)
         return newdata
 
     def prepare_data(self):
