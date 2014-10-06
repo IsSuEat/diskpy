@@ -3,8 +3,7 @@ import logging
 from utils import to_percent
 
 __author__ = 'issue'
-# todo think about threading calculating file size
-# todo implement search depth, or think about a way to store the lare  values
+
 
 
 def get_foldersize(path):
